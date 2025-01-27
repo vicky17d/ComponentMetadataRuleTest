@@ -1,0 +1,49 @@
+plugins {
+    id 'java'
+}
+
+group = 'com.example'
+version = '1.0.0'
+
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    components {
+        withModule('com.example:libraryA', com.example.PromoteRuntimeDependenciesRule)
+    }
+    implementation 'com.example:libraryA:1.0.0'
+}
+
+tasks.register('compareClasspaths') {
+    doLast {
+        def compileClasspath = configurations.compileClasspath.files.collect { it.name }
+        def runtimeClasspath = configurations.runtimeClasspath.files.collect { it.name }
+
+        println "______________________________________________"
+        println "          Compare Compile vs Runtime          "
+        println "----------------------------------------------"
+
+        println "Dependencies only in Compile Classpath:"
+        println "----------------------------------------------"
+        compileClasspath.findAll { !runtimeClasspath.contains(it) }.each {
+            println " - $it"
+        }
+
+        println "\nDependencies only in Runtime Classpath:"
+        println "----------------------------------------------"
+        runtimeClasspath.findAll { !compileClasspath.contains(it) }.each {
+            println " - $it"
+        }
+
+        println "______________________________________________"
+        if (compileClasspath != runtimeClasspath) {
+            println "⚠️ Differences exist between Compile and Runtime classpaths."
+        } else {
+            println "✅ Compile and Runtime classpaths are identical."
+        }
+    }
+}

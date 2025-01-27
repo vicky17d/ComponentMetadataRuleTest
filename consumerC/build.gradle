@@ -13,7 +13,7 @@ repositories {
 
 dependencies {
     components {
-        withModule('com.example:libraryA', com.example.PromoteRuntimeDependenciesRule)
+        withModule('com.example:libraryA', com.example.ViewAttributesRule)
     }
     implementation 'com.example:libraryA:1.0.0'
 }
